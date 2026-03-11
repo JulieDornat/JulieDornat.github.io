@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>F1 Team Recognition with CNN</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+
+<h1>F1 Team Recognition with CNN</h1>
+
+<p><strong>Date:</strong> December 2024</p>
+<p><strong>Context:</strong> APP5 Project - Polytech Paris-Saclay</p>
+<p><strong>Team:</strong> Collaboration with Maeva Burillo</p>
+
+<p><strong>Technologies:</strong> Python, TensorFlow</p>
+<p><strong>Tools:</strong> Google Colab, GitHub</p>
+<p><strong>Libraries / Modules:</strong> Pillow, Keras, NumPy</p>
+
+<h2>Context</h2>
+
+<p>
+Artificial intelligence is transforming many industries, including motorsport. 
+Formula 1 is a highly technical sport that brings together engineers and scientists 
+to design high-performance race cars capable of completing circuits in extremely 
+short times. 
+</p>
+
+<p>
+Today, AI plays an important role in this domain. It is used to model aerodynamic 
+interactions between the car and air flows, simulate race strategies while taking 
+environmental conditions into account, and anticipate mechanical failures.
+</p>
+
+<p>
+Beyond being a competitive sport, Formula 1 constantly pushes technological 
+boundaries. Each season, new car models are developed and optimized in order to 
+improve performance and competitiveness.
+</p>
+
+<h2>Problem</h2>
+
+<p>
+The goal of this project was to develop an artificial intelligence model capable 
+of recognizing Formula 1 cars from images. The first objective was to automatically 
+identify the team associated with a car present in a photograph. In a second step, 
+the objective was to predict the exact model of the car in order to estimate the 
+season in which the image was taken (between 2019 and 2024).
+</p>
+
+<p>
+This project was carried out in collaboration with Maeva Burillo.
+</p>
+
+<h2>Method</h2>
+
+<p>
+Throughout the project, we followed a standard machine learning workflow inspired 
+by the methodology presented in the book 
+<i>Hands-On Machine Learning with Scikit-Learn and TensorFlow</i> by Aurélien Géron, 
+as well as the structure introduced during the course. The main steps included 
+problem framing, data collection, data preparation, model design, training, 
+validation, performance analysis, and optimization.
+</p>
+
+<p>
+Since we were not yet familiar with Exploratory Data Analysis (EDA), this step 
+was not fully performed in the project.
+</p>
+
+<p>
+During the development process, we organized regular meetings to make key decisions 
+and distribute tasks. This division of work allowed each team member to progress 
+independently while maintaining coordination on the overall project.
+</p>
+
+<h3>Problem Framing</h3>
+
+<p>
+Recognizing Formula 1 teams and car models from images is a multi-class 
+classification problem. Currently, ten Formula 1 teams compete in the championship, 
+and each team designs new car models every season. Visual differences between 
+models can be subtle, making the classification task particularly challenging.
+</p>
+
+<h3>Dataset</h3>
+
+<p>
+The next step consisted of building datasets suitable for training and evaluating 
+the models. Publicly available datasets were either limited or contained corrupted 
+images. Therefore, we developed a Python script to automatically collect images 
+from the internet using keyword-based searches.
+</p>
+
+<h3>Data Preprocessing</h3>
+
+<p>
+The dataset was divided into three subsets: 80% for training, 10% for validation, 
+and 10% for testing. The dataset was relatively small. For the team recognition 
+task, the dataset contained 1,258 training images, 157 validation images, and 
+157 test images. For the F1 model recognition task, the dataset contained 
+1,627 training images, 185 validation images, and 243 test images.
+</p>
+
+<p>
+Images were manually reviewed in order to remove corrupted or irrelevant files. 
+They were then resized and normalized to make them compatible with deep learning 
+models.
+</p>
+
+<p>
+To mitigate overfitting observed during early experiments, data augmentation 
+techniques were applied to the training set. Additional images were generated 
+through transformations such as:
+</p>
+
+<ul>
+<li>Rotations (up to 45 degrees)</li>
+<li>Horizontal and vertical translations</li>
+<li>Scaling transformations</li>
+</ul>
+
+<p>
+Finally, each image was labeled according to its class. Classes were represented 
+by numerical indices. For example, if an image corresponded to the Haas team, 
+it was assigned the label 0.
+</p>
+
+<h3>Model</h3>
+
+<p>
+We designed an image classification model based on a Convolutional Neural Network 
+(CNN) implemented with TensorFlow. The architecture consists of several blocks of 
+convolutional layers followed by max-pooling layers, which progressively extract 
+visual features from the images.
+</p>
+
+<p>
+Convolutional layers apply filters across the image in order to detect patterns 
+such as shapes, edges, and textures. The number of filters and kernel sizes are 
+tunable parameters that influence the richness of extracted features. Increasing 
+the number of filters allows the model to capture more complex patterns but also 
+increases computational cost and the risk of overfitting.
+</p>
+
+<p>
+Max-pooling layers reduce the spatial dimensions of the feature maps by keeping 
+only the maximum values within small regions. For example, using a 2×2 pooling 
+window reduces the image dimensions by half. This operation decreases computational 
+complexity while preserving the most important features.
+</p>
+
+<p>
+These layers allow the model to progressively learn visual features, from simple 
+patterns such as colors and shapes to more abstract elements specific to Formula 1 
+cars, such as chassis structures.
+</p>
+
+<p>
+After feature extraction, a flatten layer converts the feature maps into a vector 
+that can be processed by dense layers. These layers use the ReLU activation 
+function to capture non-linear relationships.
+</p>
+
+<p>
+The final dense layer uses a Softmax activation function to output a probability 
+distribution over the classes. Each neuron corresponds to a specific team class.
+</p>
+
+<p>
+During early experiments, we observed significant overfitting. To address this 
+issue, dropout layers were introduced. These layers randomly deactivate a fraction 
+of neurons during training, which helps prevent the model from relying too heavily 
+on specific features and improves generalization.
+</p>
+
+<p>
+Hyperparameter tuning was performed manually; no automated pipeline was implemented.
+</p>
+
+<h3>Model Training</h3>
+
+<p>
+During training, we defined both the number of epochs and the batch size. An epoch 
+represents one complete pass through the training dataset, while a batch corresponds 
+to a subset of images processed simultaneously before updating the model parameters.
+</p>
+
+<p>
+We selected a batch size of 40, which was appropriate for the dataset size. 
+A batch size that is too large may lead to suboptimal convergence, while a batch 
+size that is too small can slow down training and produce unstable updates.
+</p>
+
+<p>
+The training data were shuffled at each epoch to reduce bias related to the order 
+of the samples and improve generalization.
+</p>
+
+<p>
+For backpropagation, we used the SparseCategoricalCrossEntropy loss function, 
+which is suitable for multi-class classification tasks. The optimizer used was 
+Adam, which updates model parameters by computing gradients and adjusting weights 
+accordingly.
+</p>
+
+<p>
+The training process lasted approximately 2.5 hours.
+</p>
+
+<h3>Evaluation</h3>
+
+<p>
+After training, the model achieved an accuracy of approximately 76% for the 
+Formula 1 team recognition task. Considering the relatively small size of the 
+dataset, this result was considered satisfactory.
+</p>
+
+<p>
+We analyzed the training results using accuracy and loss curves, a classification 
+report, and a confusion matrix.
+</p>
+
+<p>
+During overfitting, the model memorized the training data: the training loss 
+approached zero while the validation loss increased. Training accuracy became 
+very high, whereas validation accuracy remained below 50%.
+</p>
+
+<p>
+After introducing regularization techniques and data augmentation, the training 
+and validation curves became more consistent. Training was stopped at epoch 40 
+to prevent further overfitting.
+</p>
+
+<p>
+The classification report allowed us to evaluate performance for each class, 
+while the confusion matrix helped identify teams that were frequently confused.
+For example, the Williams class achieved the best performance, whereas Alpine 
+was often confused with Ferrari or Red Bull Racing.
+</p>
+
+<p>
+This may be explained by several factors. Background elements in images can 
+influence predictions; for example, Alpine cars are often photographed on 
+specific circuits, which may introduce biases. In addition, the Alpine logo 
+is sometimes less visible in the images.
+</p>
+
+<p>
+Potential improvements include increasing dataset diversity, refining the 
+dataset cleaning process, and experimenting with different model architectures.
+</p>
+
+<h3>F1 Model Recognition</h3>
+
+<p>
+To recognize specific Formula 1 car models, we adopted a transfer learning 
+approach based on the previously trained model. More precisely, we applied 
+fine-tuning by modifying the final layer of the network in order to classify 
+48 different car models.
+</p>
+
+<p>
+This task is significantly more challenging because differences between models 
+within the same team are often subtle. Visual features such as color or logos 
+are no longer sufficient to distinguish the cars.
+</p>
+
+<p>
+The classification report revealed large variations between classes. Some models 
+achieved accuracies above 70%, while others had very low performance. This 
+difference is mainly explained by the limited amount of available data and 
+the complexity of distinguishing visually similar models.
+</p>
+
+<h2>Contribution</h2>
+
+<ul>
+<li>Model architecture design</li>
+<li>Model training and optimization</li>
+<li>Overfitting mitigation</li>
+<li>Evaluation metrics and performance analysis</li>
+</ul>
+
+<h2>Resources</h2>
+
+<ul>
+<li><a href="https://github.com/Maeva-B/Dataset">Dataset repository</a></li>
+<li><a href="#">Project slides (PDF)</a></li>
+</ul>
+
+</body>
+</html>
